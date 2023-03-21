@@ -5,7 +5,7 @@ const numEnv = (name, def) => Number(process.env[name]) || def;
 const env = (name, def) => process.env[name] || def;
 
 const { spawn } = require('child_process');
-const { S3Uploader } = require('./utils/upload');
+//const { S3Uploader } = require('./utils/upload');
 
 const RECORDING_URL = process.env.RECORDING_URL || 'Not present in environment';
 console.log(`[recording process] RECORDING_URL: ${RECORDING_URL}`);
@@ -13,6 +13,7 @@ console.log(`[recording process] RECORDING_URL: ${RECORDING_URL}`);
 const args = process.argv.slice(2);
 const BUCKET_NAME = args[0];
 console.log(`[recording process] BUCKET_NAME: ${BUCKET_NAME}`);
+console.log(`We have intentionally disabled s3 buckets in this modification`);
 const BROWSER_SCREEN_WIDTH = args[1];
 const BROWSER_SCREEN_HEIGHT = args[2];
 console.log(`[recording process] BROWSER_SCREEN_WIDTH: ${BROWSER_SCREEN_WIDTH}, BROWSER_SCREEN_HEIGHT: ${BROWSER_SCREEN_HEIGHT}`);
@@ -83,16 +84,16 @@ const month = timestamp.getMonth() + 1;
 const day = timestamp.getDate();
 const hour = timestamp.getUTCHours();
 const filePath = env('RECORDING_PREFIX', `${year}/${month}/${day}/${hour}`);
-const fileName = `${filePath}/${fileTimestamp}.mp4`;
+const fileName = `/output/${fileTimestamp}.mp4`;
 
-const tagNames = Object.keys(process.env).filter(e => e.startsWith('tag_'));
-const tags = tagNames.slice(0, 10) // cap at 10 tags - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
+// const tagNames = Object.keys(process.env).filter(e => e.startsWith('tag_'));
+// const tags = tagNames.slice(0, 10) // cap at 10 tags - https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
                    .map(e => ({ Key: e.substring(4, 132), Value: process.env[e].substring(0, 256) }));
-tagNames.slice(0, 10).forEach(e => console.log(`[recording process] stored tag ${e.substring(4, 132)}=${process.env[e]}`));
-if (tagNames.length > 10)
+// tagNames.slice(0, 10).forEach(e => console.log(`[recording process] stored tag ${e.substring(4, 132)}=${process.env[e]}`));
+// if (tagNames.length > 10)
     tagNames.slice(10).forEach(e => console.log(`[recording process] ignored tag ${e.substring(4, 132)}=${process.env[e]}`));
 
-new S3Uploader(BUCKET_NAME, fileName).uploadStream(transcodeStreamToOutput.stdout, tags);
+// new S3Uploader(BUCKET_NAME, fileName).uploadStream(transcodeStreamToOutput.stdout, tags);
 
 // event handler for docker stop, not exit until upload completes
 process.on('SIGTERM', (code, signal) => {
