@@ -36,6 +36,7 @@ S3_BUCKET_NAME=${RECORDING_ARTIFACTS_BUCKET:?}
 
 echo "Recorder started with resolution $SCREEN_RESOLUTION (${COLOR_DEPTH}-bit)"
 echo "Storing artefacts to S3 bucket '${S3_BUCKET_NAME}'"
+echo "S3 disabled in this modification"
 
 # Start PulseAudio server so Firefox will have somewhere to which to send audio
 echo Starting PulseAudio server
